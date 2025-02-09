@@ -4,7 +4,7 @@ export { toDateId, fromDateId } from "./helpers/dates";
 export {
   type UseCalendarParams,
   type CalendarDayMetadata,
-  type CalendarActiveDateRange,
+  type CalendarDateRange,
   useCalendar,
   buildCalendar,
 } from "./hooks/useCalendar";

@@ -144,6 +144,9 @@ export const CalendarList = memo(
 
     const {
       calendarActiveDateRanges,
+      calendarStayDateRange,
+      calendarHighSeasonsDateRange,
+      calendarSpecialDateRange,
       calendarDisabledDateIds,
       calendarInstanceId,
       calendarMaxDateId,
@@ -158,6 +161,9 @@ export const CalendarList = memo(
     const calendarProps = useMemo(
       (): CalendarMonthEnhanced["calendarProps"] => ({
         calendarActiveDateRanges,
+        calendarStayDateRange,
+        calendarHighSeasonsDateRange,
+        calendarSpecialDateRange,
         calendarColorScheme,
         calendarDayHeight,
         calendarDisabledDateIds,
@@ -179,6 +185,9 @@ export const CalendarList = memo(
       [
         calendarColorScheme,
         calendarActiveDateRanges,
+        calendarStayDateRange,
+        calendarHighSeasonsDateRange,
+        calendarSpecialDateRange,
         calendarDayHeight,
         calendarDisabledDateIds,
         calendarFirstDayOfWeek,

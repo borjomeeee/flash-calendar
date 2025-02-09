@@ -1,5 +1,5 @@
 import type {
-  CalendarActiveDateRange,
+  CalendarDateRange,
   CalendarOnDayPress,
 } from "@marceloterreiro/flash-calendar";
 import {
@@ -56,7 +56,7 @@ export const WindowsXP = () => {
     setIsPickerVisible(false);
   }, []);
 
-  const calendarActiveDateRanges = useMemo<CalendarActiveDateRange[]>(
+  const calendarActiveDateRanges = useMemo<CalendarDateRange[]>(
     () => [
       {
         startId: toDateId(selectedDate),

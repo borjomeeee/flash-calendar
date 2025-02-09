@@ -1,5 +1,5 @@
 import type {
-  CalendarActiveDateRange,
+  CalendarDateRange,
   CalendarTheme,
 } from "@marceloterreiro/flash-calendar";
 import { Calendar, toDateId } from "@marceloterreiro/flash-calendar";
@@ -79,7 +79,7 @@ const linearTheme: CalendarTheme = {
   },
 };
 
-const calendarActiveDateRanges: CalendarActiveDateRange[] = [
+const calendarActiveDateRanges: CalendarDateRange[] = [
   {
     startId: toDateId(add(startOfThisMonth, { days: 3 })),
     endId: toDateId(add(startOfThisMonth, { days: 8 })),

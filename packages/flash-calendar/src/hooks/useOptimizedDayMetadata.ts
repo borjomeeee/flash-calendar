@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 
 import {
   getStateFields,
-  type CalendarActiveDateRange,
+  type CalendarDateRange,
   type CalendarDayMetadata,
 } from "@/hooks/useCalendar";
 
 interface OnSetActiveDateRangesPayload {
   instanceId?: string;
-  ranges: CalendarActiveDateRange[];
+  ranges: CalendarDateRange[];
 }
 
 /**
