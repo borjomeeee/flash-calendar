@@ -8,6 +8,8 @@ import type { CalendarDayMetadata } from "@/hooks/useCalendar";
 import { useOptimizedDayMetadata } from "@/hooks/useOptimizedDayMetadata";
 import { useTheme } from "@/hooks/useTheme";
 
+import type { CalendarOnDayPress } from "./Calendar";
+
 // react-native-web/overrides.ts
 declare module "react-native" {
   interface PressableStateCallbackType {
@@ -29,7 +31,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export type DayState = "idle" | "active" | "today" | "disabled";
+export type DayState = "idle" | "active" | "today" | "disabled" | "stay";
+export type DayType = "high-season" | "special-date";
 
 interface DayTheme {
   container: Omit<ViewStyle, "borderRadius">;
@@ -98,6 +101,10 @@ const buildBaseStyles = (theme: BaseTheme): CalendarItemDayTheme => {
         color: theme.colors.content.disabled,
       },
     }),
+    stay: () => ({
+      container: styles.baseContainer,
+      content: baseContent,
+    }),
     idle: ({ isPressed, isHovered }) => {
       return isPressed || isHovered
         ? {
@@ -139,11 +146,11 @@ const buildBaseStyles = (theme: BaseTheme): CalendarItemDayTheme => {
 
 export interface CalendarItemDayProps {
   children: ReactNode;
-  onPress: (id: string) => void;
+  onPress: CalendarOnDayPress;
   metadata: CalendarDayMetadata;
   theme?: Partial<
     Record<
-      DayState | "base",
+      DayState | DayType | "base",
       (
         params: CalendarDayMetadata & {
           isPressed: boolean;
@@ -181,8 +188,8 @@ export const CalendarItemDay = ({
   }, [baseTheme]);
 
   const handlePress = useCallback(() => {
-    onPress(metadata.id);
-  }, [metadata.id, onPress]);
+    onPress(metadata.id, metadata);
+  }, [metadata, onPress]);
 
   return (
     <Pressable
@@ -201,9 +208,31 @@ export const CalendarItemDay = ({
           isStartOfRange: metadata.isStartOfRange ?? false,
         };
         const { container } = baseStyles[metadata.state](params);
+        const containerWithRadius: ViewStyle = { ...container };
+        containerWithRadius.borderRadius = 0;
+        if (params.isStartOfRange) {
+          containerWithRadius.borderTopLeftRadius = 16;
+          containerWithRadius.borderBottomLeftRadius = 16;
+        }
+        if (params.isEndOfRange) {
+          containerWithRadius.borderTopRightRadius = 16;
+          containerWithRadius.borderBottomRightRadius = 16;
+        }
+        if (!params.isStartOfRange && !params.isEndOfRange) {
+          containerWithRadius.borderRadius = 0;
+        }
+
+        const typeStyles = metadata.types.reduce((acc, item) => {
+          acc = {
+            ...acc,
+            ...theme?.[item]?.({ ...metadata, isPressed }).container,
+          };
+          return acc;
+        }, {});
         return {
-          ...container,
+          ...containerWithRadius,
           height,
+          ...typeStyles,
           ...theme?.base?.({ ...metadata, isPressed }).container,
           ...theme?.[metadata.state]?.({ ...metadata, isPressed }).container,
         };
@@ -218,12 +247,20 @@ export const CalendarItemDay = ({
           isStartOfRange: metadata.isStartOfRange ?? false,
         };
         const { content } = baseStyles[metadata.state](params);
+        const typeStyles = metadata.types.reduce((acc, item) => {
+          acc = {
+            ...acc,
+            ...theme?.[item]?.({ ...metadata, isPressed }).content,
+          };
+          return acc;
+        }, {});
         return (
           <Text
             {...textProps}
             style={{
               ...content,
               ...(textProps?.style ?? ({} as object)),
+              ...typeStyles,
               ...theme?.base?.({ ...metadata, isPressed, isHovered, isFocused })
                 .content,
               ...theme?.[metadata.state]?.({
@@ -249,6 +286,8 @@ interface CalendarItemDayContainerTheme {
   /** An absolute positioned filler to join the active days together in a single
    * complete range. */
   activeDayFiller?: ViewStyle;
+  stayDayFiller?: ViewStyle;
+  specialDateDot?: ViewStyle;
 }
 
 export interface CalendarItemDayContainerProps {
@@ -266,15 +305,20 @@ export interface CalendarItemDayContainerProps {
   daySpacing: number;
   /** The day's height */
   dayHeight: number;
+  /** CUSTOM */
+  stay?: string;
+  shouldShowSpecialDateDot?: boolean;
 }
 
 export const CalendarItemDayContainer = ({
   children,
   isStartOfWeek,
   shouldShowActiveDayFiller,
+  shouldShowSpecialDateDot,
   theme,
   daySpacing,
   dayHeight,
+  stay,
 }: CalendarItemDayContainerProps) => {
   const baseTheme = useTheme();
   const spacerStyles = useMemo<ViewStyle>(() => {
@@ -299,19 +343,52 @@ export const CalendarItemDayContainer = ({
       right: -(daySpacing + 1), // +1 to cover the 1px gap
       width: daySpacing + 2, // +2 to cover the 1px gap (distributes evenly on both sides)
       backgroundColor: baseTheme.colors.background.inverse.primary,
-      ...theme?.activeDayFiller,
+      ...(stay ? theme?.stayDayFiller : theme?.activeDayFiller),
     };
   }, [
     baseTheme.colors.background.inverse.primary,
     daySpacing,
     shouldShowActiveDayFiller,
     theme?.activeDayFiller,
+    theme?.stayDayFiller,
+    stay,
+  ]);
+
+  const specialDateDot = useMemo(() => {
+    if (!shouldShowSpecialDateDot) {
+      return null;
+    }
+
+    return {
+      alignSelf: "center" as const,
+      width: 4,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: baseTheme.colors.background.inverse.primary,
+      ...theme?.specialDateDot,
+    };
+  }, [
+    shouldShowSpecialDateDot,
+    baseTheme.colors.background.inverse.primary,
+    theme?.specialDateDot,
   ]);
 
   return (
     <View style={spacerStyles}>
       {children}
       {activeDayFiller ? <View style={activeDayFiller} /> : null}
+      {specialDateDot ? (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            alignContent: "center",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <View style={specialDateDot} />
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -356,6 +433,8 @@ export const CalendarItemDayWithContainer = ({
           ? !metadata.isEndOfRange
           : false
       }
+      shouldShowSpecialDateDot={!!metadata.specialDate}
+      stay={metadata.stayDate}
       theme={containerTheme}
     >
       <CalendarItemDay

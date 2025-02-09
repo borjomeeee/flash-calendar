@@ -20,7 +20,10 @@ import { CalendarRowWeek } from "@/components/CalendarRowWeek";
 import { VStack } from "@/components/VStack";
 import { uppercaseFirstLetter } from "@/helpers/strings";
 import type { BaseTheme } from "@/helpers/tokens";
-import type { UseCalendarParams } from "@/hooks/useCalendar";
+import type {
+  CalendarDayStateFields,
+  UseCalendarParams,
+} from "@/hooks/useCalendar";
 import { useCalendar } from "@/hooks/useCalendar";
 import { activeDateRangesEmitter } from "@/hooks/useOptimizedDayMetadata";
 import { CalendarThemeProvider } from "@/components/CalendarThemeProvider";
@@ -38,7 +41,10 @@ export interface CalendarTheme {
   itemDay?: CalendarItemDayProps["theme"];
 }
 
-export type CalendarOnDayPress = (dateId: string) => void;
+export type CalendarOnDayPress = (
+  dateId: string,
+  fields: CalendarDayStateFields
+) => void;
 
 export interface CalendarProps extends UseCalendarParams {
   /**
@@ -93,6 +99,9 @@ export interface CalendarProps extends UseCalendarParams {
    * The callback to be called when a day is pressed.
    */
   onCalendarDayPress: CalendarOnDayPress;
+  onCalendarSpecialDayPress: CalendarOnDayPress;
+  onCalendarStayDayPress: CalendarOnDayPress;
+  onCalendarHighSeasonDayPress: CalendarOnDayPress;
   /** Theme to customize the calendar component. */
   theme?: CalendarTheme;
 }

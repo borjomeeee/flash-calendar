@@ -1,20 +1,20 @@
 import { useCallback, useMemo, useState } from "react";
 
 import type { CalendarOnDayPress } from "@/components";
-import type { CalendarActiveDateRange } from "@/hooks/useCalendar";
+import type { CalendarDateRange } from "@/hooks/useCalendar";
 
 /**
  * A convenience hook to simplify managing a date range in the calendar in a
  * performant way.
  */
 export const useDateRange = (
-  initialDateRange: CalendarActiveDateRange = {
+  initialDateRange: CalendarDateRange = {
     startId: undefined,
     endId: undefined,
   }
 ) => {
   const [dateRange, setDateRange] =
-    useState<CalendarActiveDateRange>(initialDateRange);
+    useState<CalendarDateRange>(initialDateRange);
 
   const onCalendarDayPress = useCallback<CalendarOnDayPress>(
     (dateId: string) => {

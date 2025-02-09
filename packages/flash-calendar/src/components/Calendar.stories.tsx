@@ -94,6 +94,37 @@ export const MinAndMaxDates: StoryObj<typeof Calendar> = {
 
 export const ActiveDateRanges: StoryObj<typeof Calendar> = {
   args: {
+    theme: {
+      itemDayContainer: {
+        stayDayFiller: {
+          backgroundColor: "#ff0000",
+        },
+        specialDateDot: {
+          backgroundColor: "#ff0000",
+        },
+      },
+      itemDay: {
+        disabled: () => ({
+          container: {
+            opacity: 0.5,
+          },
+        }),
+
+        "high-season": () => ({
+          content: {
+            color: "#ff0000",
+          },
+        }),
+
+        stay: () => ({
+          container: {
+            backgroundColor: "#ff0000",
+          },
+        }),
+      },
+    },
+
+    calendarDisabledDateIds: ["2024-01-14", "2024-01-15", "2024-01-16"],
     calendarActiveDateRanges: [
       { startId: "2024-01-04", endId: "2024-01-06" },
       { startId: "2024-01-10", endId: "2024-01-12" },
@@ -101,7 +132,20 @@ export const ActiveDateRanges: StoryObj<typeof Calendar> = {
       { startId: "2024-01-24" },
       { endId: "2024-01-29" },
     ],
+    calendarHighSeasonsDateRange: ["2024-01-14", "2024-01-15", "2024-01-16"],
+    calendarSpecialDateRange: [
+      {
+        dateId: "2024-01-15",
+        name: "special date name",
+        description: "special date description",
+      },
+    ],
+    calendarStayDateRange: [
+      { startId: "2024-01-17", endId: "2024-01-20", stayId: "test-stay" },
+    ],
     calendarMonthId: "2024-01-01",
+
+    onCalendarDayPress: loggingHandler("onCalendarDayPress"),
   },
 };
 
