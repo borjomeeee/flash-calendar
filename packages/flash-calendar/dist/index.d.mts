@@ -148,7 +148,7 @@ declare module "react-native" {
     }
 }
 type DayState = "idle" | "active" | "today" | "disabled" | "stay";
-type DayType = "high-season" | "special-date";
+type DayType = "high-season" | "special-date" | "today";
 interface DayTheme {
     container: Omit<ViewStyle, "borderRadius">;
     content: TextStyle;
@@ -646,6 +646,10 @@ declare function fromDateId(dateId: string): Date;
 interface OnSetActiveDateRangesPayload {
     instanceId?: string;
     ranges: CalendarDateRange[];
+    disabledRanges: string[];
+    specialDateRanges: CalendarSpecialDate[];
+    stayDateRange: CalendarStayDateRange[];
+    highSeasonRange: string[];
 }
 /**
  * An event emitter for the active date ranges. This notifies the calendar items
