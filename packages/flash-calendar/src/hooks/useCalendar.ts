@@ -167,8 +167,6 @@ export interface UseCalendarParams {
 type GetStateFields = Pick<
   UseCalendarParams,
   | "calendarActiveDateRanges"
-  | "calendarMinDateId"
-  | "calendarMaxDateId"
   | "calendarDisabledDateIds"
   | "calendarSpecialDateRange"
   | "calendarHighSeasonsDateRange"
@@ -185,8 +183,6 @@ export const getStateFields = ({
   todayId,
   id,
   calendarActiveDateRanges,
-  calendarMinDateId,
-  calendarMaxDateId,
   calendarDisabledDateIds,
   calendarHighSeasonsDateRange,
   calendarSpecialDateRange,
@@ -222,11 +218,7 @@ export const getStateFields = ({
     stayDateRange?.startId !== undefined && stayDateRange.endId !== undefined;
   const isRangeValid = isActiveRange || isStayRange;
 
-  const isDisabled =
-    (calendarDisabledDateIds?.includes(id) ||
-      (calendarMinDateId && id < calendarMinDateId) ||
-      (calendarMaxDateId && id > calendarMaxDateId)) === true;
-
+  const isDisabled = calendarDisabledDateIds?.includes(id);
   const specialDate = calendarSpecialDateRange?.find(({ dateId }) => {
     return dateId === id;
   });
@@ -240,16 +232,18 @@ export const getStateFields = ({
     ? "stay"
     : isDisabled
     ? "disabled"
-    : isToday
-    ? "today"
     : "idle";
 
   const types: DayType[] = [];
+
   if (isHighSeasonDate) {
     types.push("high-season");
   }
   if (specialDate) {
     types.push("special-date");
+  }
+  if (isToday) {
+    types.push("today");
   }
 
   return {

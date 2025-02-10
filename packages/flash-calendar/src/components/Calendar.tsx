@@ -187,6 +187,10 @@ export const Calendar = memo(function Calendar(props: CalendarProps) {
   const {
     calendarInstanceId,
     calendarActiveDateRanges,
+    calendarDisabledDateIds,
+    calendarSpecialDateRange,
+    calendarStayDateRange,
+    calendarHighSeasonsDateRange,
     calendarMonthId,
     calendarColorScheme,
     ...otherProps
@@ -195,6 +199,10 @@ export const Calendar = memo(function Calendar(props: CalendarProps) {
     activeDateRangesEmitter.emit("onSetActiveDateRanges", {
       instanceId: calendarInstanceId,
       ranges: calendarActiveDateRanges ?? [],
+      disabledRanges: calendarDisabledDateIds ?? [],
+      specialDateRanges: calendarSpecialDateRange ?? [],
+      stayDateRange: calendarStayDateRange ?? [],
+      highSeasonRange: calendarHighSeasonsDateRange ?? [],
     });
     /**
      * While `calendarMonthId` is not used by the effect, we still need it in
@@ -206,7 +214,7 @@ export const Calendar = memo(function Calendar(props: CalendarProps) {
      * reported by
      * [#11](https://github.com/MarceloPrado/flash-calendar/issues/11).
      */
-  }, [calendarActiveDateRanges, calendarInstanceId, calendarMonthId]);
+  }, [calendarActiveDateRanges, calendarDisabledDateIds, calendarSpecialDateRange, calendarStayDateRange, calendarHighSeasonsDateRange, calendarInstanceId, calendarMonthId]);
 
   return (
     <CalendarThemeProvider colorScheme={calendarColorScheme}>

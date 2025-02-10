@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 
 import {
   getStateFields,
+  type CalendarSpecialDate,
+  type CalendarStayDateRange,
   type CalendarDateRange,
   type CalendarDayMetadata,
 } from "@/hooks/useCalendar";
@@ -10,6 +12,10 @@ import {
 interface OnSetActiveDateRangesPayload {
   instanceId?: string;
   ranges: CalendarDateRange[];
+  disabledRanges: string[];
+  specialDateRanges: CalendarSpecialDate[];
+  stayDateRange: CalendarStayDateRange[];
+  highSeasonRange: string[];
 }
 
 /**
@@ -54,7 +60,14 @@ export const useOptimizedDayMetadata = (
 
   useEffect(() => {
     const handler = (payload: OnSetActiveDateRangesPayload) => {
-      const { ranges, instanceId = DEFAULT_CALENDAR_INSTANCE_ID } = payload;
+      const {
+        ranges,
+        disabledRanges,
+        specialDateRanges,
+        stayDateRange,
+        highSeasonRange,
+        instanceId = DEFAULT_CALENDAR_INSTANCE_ID,
+      } = payload;
       if (instanceId !== safeCalendarInstanceId) {
         // This event is not for this instance, ignore it.
         return;
@@ -62,23 +75,30 @@ export const useOptimizedDayMetadata = (
 
       // We're only interested in the active date ranges, no need to worry about
       // disabled states. These are already covered by the base metadata.
-      const { isStartOfRange, isEndOfRange, isRangeValid, state } =
-        getStateFields({
-          id: metadata.id,
-          calendarActiveDateRanges: ranges,
-        });
+      const fields = getStateFields({
+        id: metadata.id,
+        calendarActiveDateRanges: ranges,
+        calendarDisabledDateIds: disabledRanges,
+        calendarSpecialDateRange: specialDateRanges,
+        calendarStayDateRange: stayDateRange,
+        calendarHighSeasonsDateRange: highSeasonRange,
+      });
 
-      if (state === "active") {
+      const propertiesSame = Object.entries(fields).every(([key, value]) => {
+        if (typeof value === "object") {
+          return (
+            JSON.stringify(value) === JSON.stringify((metadata as any)[key])
+          );
+        } else {
+          return value === (metadata as any)[key];
+        }
+      });
+
+      if (!propertiesSame) {
         setMetadata((prev) => ({
           ...prev,
-          isStartOfRange,
-          isEndOfRange,
-          isRangeValid,
-          state,
+          ...fields,
         }));
-      } else {
-        // Resets the state when it's no longer active.
-        setMetadata(baseMetadata);
       }
     };
 

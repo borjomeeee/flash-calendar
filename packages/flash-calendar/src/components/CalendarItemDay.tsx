@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
 });
 
 export type DayState = "idle" | "active" | "today" | "disabled" | "stay";
-export type DayType = "high-season" | "special-date";
+export type DayType = "high-season" | "special-date" | "today";
 
 interface DayTheme {
   container: Omit<ViewStyle, "borderRadius">;
