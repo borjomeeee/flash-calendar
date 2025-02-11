@@ -1,12 +1,12 @@
 import mitt from "mitt";
 import { useEffect, useState } from "react";
 
-import {
-  getStateFields,
-  type CalendarSpecialDate,
-  type CalendarStayDateRange,
-  type CalendarDateRange,
-  type CalendarDayMetadata,
+import { getStateFields } from "@/hooks/useCalendar";
+import type {
+  CalendarSpecialDate,
+  CalendarStayDateRange,
+  CalendarDateRange,
+  CalendarDayMetadata,
 } from "@/hooks/useCalendar";
 
 interface OnSetActiveDateRangesPayload {

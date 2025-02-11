@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import type { DayState, DayType } from "@/components/CalendarItemDay";
+import type { DayState } from "@/components/CalendarItemDay";
 import {
   addDays,
   endOfMonth,
@@ -42,13 +42,11 @@ export interface CalendarDayStateFields {
   /**  Is this the end of a range? */
   isEndOfRange: boolean;
   /** The state of the day */
-  state: DayState;
+  state: DayState[];
   /** Is the range valid (has both start and end dates set)? */
   isRangeValid: boolean;
 
   /** CUSTOM FIELDS */
-  types: DayType[];
-
   specialDate?: SpecialDateParams;
   stayDate?: string;
 
@@ -225,25 +223,25 @@ export const getStateFields = ({
   const isHighSeasonDate = !!calendarHighSeasonsDateRange?.includes(id);
 
   const isToday = todayId === id;
-
-  const state: DayState = activeRange
-    ? ("active" as const)
-    : stayDateRange?.stayId
-    ? "stay"
-    : isDisabled
-    ? "disabled"
-    : "idle";
-
-  const types: DayType[] = [];
+  const states: DayState[] = ["idle"];
 
   if (isHighSeasonDate) {
-    types.push("high-season");
+    states.push("high-season");
   }
   if (specialDate) {
-    types.push("special-date");
+    states.push("special-date");
   }
   if (isToday) {
-    types.push("today");
+    states.push("today");
+  }
+  if (isDisabled) {
+    states.push("disabled");
+  }
+  if (activeRange) {
+    states.push("active");
+  }
+  if (stayDateRange) {
+    states.push("stay");
   }
 
   return {
@@ -252,8 +250,7 @@ export const getStateFields = ({
     isEndOfRange: id === activeRange?.endId || id === stayDateRange?.endId,
     isRangeValid,
 
-    state,
-    types,
+    state: states,
 
     isHighSeasonDate,
     specialDate,

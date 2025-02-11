@@ -196,7 +196,6 @@ export const Calendar = memo(function Calendar(props: CalendarProps) {
     ...otherProps
   } = props;
   useEffect(() => {
-    console.log(calendarMonthId);
     activeDateRangesEmitter.emit("onSetActiveDateRanges", {
       instanceId: calendarInstanceId,
       ranges: calendarActiveDateRanges ?? [],

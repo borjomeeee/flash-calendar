@@ -16,11 +16,10 @@ interface CalendarDayStateFields {
     /**  Is this the end of a range? */
     isEndOfRange: boolean;
     /** The state of the day */
-    state: DayState;
+    state: DayState[];
     /** Is the range valid (has both start and end dates set)? */
     isRangeValid: boolean;
     /** CUSTOM FIELDS */
-    types: DayType[];
     specialDate?: SpecialDateParams;
     stayDate?: string;
     isHighSeasonDate: boolean;
@@ -147,8 +146,7 @@ declare module "react-native" {
         focused?: boolean;
     }
 }
-type DayState = "idle" | "active" | "today" | "disabled" | "stay";
-type DayType = "high-season" | "special-date" | "today";
+type DayState = "idle" | "active" | "today" | "disabled" | "stay" | "high-season" | "special-date";
 interface DayTheme {
     container: Omit<ViewStyle, "borderRadius">;
     content: TextStyle;
@@ -157,7 +155,7 @@ interface CalendarItemDayProps {
     children: ReactNode;
     onPress: CalendarOnDayPress;
     metadata: CalendarDayMetadata;
-    theme?: Partial<Record<DayState | DayType | "base", (params: CalendarDayMetadata & {
+    theme?: Partial<Record<DayState | "base", (params: CalendarDayMetadata & {
         isPressed: boolean;
         isHovered?: boolean;
         isFocused?: boolean;

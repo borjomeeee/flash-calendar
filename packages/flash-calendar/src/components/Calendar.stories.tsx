@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { addDays, subDays } from "date-fns";
 import { format } from "date-fns/fp/format";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Text } from "react-native";
 
 import { paddingDecorator } from "@/developer/decorators";
@@ -92,9 +92,9 @@ export const MinAndMaxDates: StoryObj<typeof Calendar> = {
   },
 };
 
-export const ActiveDateRanges: StoryObj<typeof Calendar> = {
-  args: {
-    theme: {
+export const ActiveDateRanges = () => {
+  const theme = useMemo(
+    () => ({
       itemDayContainer: {
         stayDayFiller: {
           backgroundColor: "#ff0000",
@@ -122,31 +122,32 @@ export const ActiveDateRanges: StoryObj<typeof Calendar> = {
           },
         }),
       },
-    },
+    }),
+    []
+  );
 
-    calendarDisabledDateIds: ["2024-01-14", "2024-01-15", "2024-01-16"],
-    calendarActiveDateRanges: [
-      { startId: "2024-01-04", endId: "2024-01-06" },
-      { startId: "2024-01-10", endId: "2024-01-12" },
-      //   Incomplete
-      { startId: "2024-01-24" },
-      { endId: "2024-01-29" },
-    ],
-    calendarHighSeasonsDateRange: ["2024-01-14", "2024-01-15", "2024-01-16"],
-    calendarSpecialDateRange: [
-      {
-        dateId: "2024-01-15",
-        name: "special date name",
-        description: "special date description",
-      },
-    ],
-    calendarStayDateRange: [
-      { startId: "2024-01-17", endId: "2024-01-20", stayId: "test-stay" },
-    ],
-    calendarMonthId: "2024-01-01",
+  const { calendarActiveDateRanges, onCalendarDayPress } = useDateRange();
 
-    onCalendarDayPress: loggingHandler("onCalendarDayPress"),
-  },
+  return (
+    <Calendar
+      calendarDisabledDateIds={["2024-01-14", "2024-01-15", "2024-01-16"]}
+      calendarHighSeasonsDateRange={["2024-01-14", "2024-01-15", "2024-01-16"]}
+      calendarMonthId="2024-01-01"
+      calendarSpecialDateRange={[
+        {
+          dateId: "2024-01-15",
+          name: "special date name",
+          description: "special date description",
+        },
+      ]}
+      calendarStayDateRange={[
+        { startId: "2024-01-17", endId: "2024-01-20", stayId: "test-stay" },
+      ]}
+      // onCalendarDayPress={loggingHandler("onCalendarDayPress")}
+      theme={theme}
+      {...{ calendarActiveDateRanges, onCalendarDayPress }}
+    />
+  );
 };
 
 export const WithCustomLocale = (args: typeof KichenSink.args) => {

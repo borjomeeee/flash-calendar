@@ -31,22 +31,30 @@ const styles = StyleSheet.create({
   },
 });
 
-export type DayState = "idle" | "active" | "today" | "disabled" | "stay";
-export type DayType = "high-season" | "special-date" | "today";
+export type DayState =
+  | "idle"
+  | "active"
+  | "today"
+  | "disabled"
+  | "stay"
+  | "high-season"
+  | "special-date";
 
 interface DayTheme {
   container: Omit<ViewStyle, "borderRadius">;
   content: TextStyle;
 }
-type CalendarItemDayTheme = Record<
-  DayState,
-  (params: {
-    isStartOfRange: boolean;
-    isEndOfRange: boolean;
-    isPressed: boolean;
-    isHovered?: boolean;
-    isFocused?: boolean;
-  }) => DayTheme
+type CalendarItemDayTheme = Partial<
+  Record<
+    DayState,
+    (params: {
+      isStartOfRange: boolean;
+      isEndOfRange: boolean;
+      isPressed: boolean;
+      isHovered?: boolean;
+      isFocused?: boolean;
+    }) => DayTheme
+  >
 >;
 
 const buildBaseStyles = (theme: BaseTheme): CalendarItemDayTheme => {
@@ -150,7 +158,7 @@ export interface CalendarItemDayProps {
   metadata: CalendarDayMetadata;
   theme?: Partial<
     Record<
-      DayState | DayType | "base",
+      DayState | "base",
       (
         params: CalendarDayMetadata & {
           isPressed: boolean;
@@ -193,7 +201,7 @@ export const CalendarItemDay = ({
 
   return (
     <Pressable
-      disabled={metadata.state === "disabled"}
+      disabled={metadata.state.includes("disabled")}
       onPress={handlePress}
       style={({
         pressed: isPressed,
@@ -207,34 +215,40 @@ export const CalendarItemDay = ({
           isEndOfRange: metadata.isEndOfRange ?? false,
           isStartOfRange: metadata.isStartOfRange ?? false,
         };
-        const { container } = baseStyles[metadata.state](params);
-        const containerWithRadius: ViewStyle = { ...container };
-        containerWithRadius.borderRadius = 0;
+        const radiusStyles: ViewStyle = {};
+        radiusStyles.borderRadius = 0;
         if (params.isStartOfRange) {
-          containerWithRadius.borderTopLeftRadius = 16;
-          containerWithRadius.borderBottomLeftRadius = 16;
+          radiusStyles.borderTopLeftRadius = 16;
+          radiusStyles.borderBottomLeftRadius = 16;
         }
         if (params.isEndOfRange) {
-          containerWithRadius.borderTopRightRadius = 16;
-          containerWithRadius.borderBottomRightRadius = 16;
+          radiusStyles.borderTopRightRadius = 16;
+          radiusStyles.borderBottomRightRadius = 16;
         }
         if (!params.isStartOfRange && !params.isEndOfRange) {
-          containerWithRadius.borderRadius = 0;
+          radiusStyles.borderRadius = 0;
         }
 
-        const typeStyles = metadata.types.reduce((acc, item) => {
+        const baseStylesForStates = metadata.state.reduce((acc, item) => {
           acc = {
             ...acc,
-            ...theme?.[item]?.({ ...metadata, isPressed }).container,
+            ...baseStyles?.[item]?.({ ...params, ...metadata }).container,
+          };
+          return acc;
+        }, {});
+
+        const statesStyles = metadata.state.reduce((acc, item) => {
+          acc = {
+            ...acc,
+            ...theme?.[item]?.({ ...params, ...metadata }).container,
           };
           return acc;
         }, {});
         return {
-          ...containerWithRadius,
           height,
-          ...typeStyles,
-          ...theme?.base?.({ ...metadata, isPressed }).container,
-          ...theme?.[metadata.state]?.({ ...metadata, isPressed }).container,
+          ...baseStylesForStates,
+          ...radiusStyles,
+          ...statesStyles,
         };
       }}
     >
@@ -246,11 +260,19 @@ export const CalendarItemDay = ({
           isEndOfRange: metadata.isEndOfRange ?? false,
           isStartOfRange: metadata.isStartOfRange ?? false,
         };
-        const { content } = baseStyles[metadata.state](params);
-        const typeStyles = metadata.types.reduce((acc, item) => {
+
+        const baseStylesForStates = metadata.state.reduce((acc, item) => {
           acc = {
             ...acc,
-            ...theme?.[item]?.({ ...metadata, isPressed }).content,
+            ...baseStyles?.[item]?.({ ...params, ...metadata }).content,
+          };
+          return acc;
+        }, {});
+
+        const statesStyles = metadata.state.reduce((acc, item) => {
+          acc = {
+            ...acc,
+            ...theme?.[item]?.({ ...params, ...metadata }).content,
           };
           return acc;
         }, {});
@@ -258,17 +280,9 @@ export const CalendarItemDay = ({
           <Text
             {...textProps}
             style={{
-              ...content,
               ...(textProps?.style ?? ({} as object)),
-              ...typeStyles,
-              ...theme?.base?.({ ...metadata, isPressed, isHovered, isFocused })
-                .content,
-              ...theme?.[metadata.state]?.({
-                ...metadata,
-                isPressed,
-                isHovered,
-                isFocused,
-              }).content,
+              ...baseStylesForStates,
+              ...statesStyles,
             }}
           >
             {children}
