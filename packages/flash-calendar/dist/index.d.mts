@@ -71,20 +71,6 @@ interface UseCalendarParams {
      */
     calendarMonthId: string;
     /**
-     * The minimum date allowed to be selected (inclusive). Dates earlier than
-     * this will be disabled.
-     *
-     * **Tip**: To convert to date ID, use `toDateId(date)`.
-     */
-    calendarMinDateId?: string;
-    /**
-     * The maximum date allowed to be selected (inclusive). Dates later than this
-     * will be disabled.
-     *
-     * **Tip**: To convert to date ID, use `toDateId(date)`.
-     */
-    calendarMaxDateId?: string;
-    /**
      * The locale to use for the date formatting. If you're using custom
      * formatting functions, this value will be forwarded as the second argument.
      * @defaultValue "en-US"
@@ -419,14 +405,28 @@ interface CalendarProps extends UseCalendarParams {
     /** Theme to customize the calendar component. */
     theme?: CalendarTheme;
 }
-declare const Calendar$1: react.NamedExoticComponent<CalendarProps>;
+declare const Calendar$1: react.NamedExoticComponent<CalendarProps & UseCalendarParams>;
 
 interface CalendarMonth {
     id: string;
     date: Date;
     numberOfWeeks: number;
 }
-interface UseCalendarListParams extends Pick<UseCalendarParams, "calendarMinDateId" | "calendarMaxDateId"> {
+interface UseCalendarListParams extends Omit<UseCalendarParams, "calendarMonthId"> {
+    /**
+     * The minimum date allowed to be selected (inclusive). Dates earlier than
+     * this will be disabled.
+     *
+     * **Tip**: To convert to date ID, use `toDateId(date)`.
+     */
+    calendarMinDateId?: string;
+    /**
+     * The maximum date allowed to be selected (inclusive). Dates later than this
+     * will be disabled.
+     *
+     * **Tip**: To convert to date ID, use `toDateId(date)`.
+     */
+    calendarMaxDateId?: string;
     /**
      * The initial month to open the calendar to, as a `YYYY-MM-DD` string.
      * @defaultValue today
@@ -492,6 +492,20 @@ type CalendarMonthEnhanced = CalendarMonth & {
     calendarProps: Omit<CalendarProps, "calendarMonthId">;
 };
 interface CalendarListProps extends Omit<CalendarProps, "calendarMonthId">, Omit<FlashListProps<CalendarMonthEnhanced>, "renderItem" | "data"> {
+    /**
+     * The minimum date allowed to be selected (inclusive). Dates earlier than
+     * this will be disabled.
+     *
+     * **Tip**: To convert to date ID, use `toDateId(date)`.
+     */
+    calendarMinDateId?: string;
+    /**
+     * The maximum date allowed to be selected (inclusive). Dates later than this
+     * will be disabled.
+     *
+     * **Tip**: To convert to date ID, use `toDateId(date)`.
+     */
+    calendarMaxDateId?: string;
     /**
      * How many months to show before the current month. Once the user scrolls
      * past this range and if they haven't exceeded the `calendarMinDateId`, new

@@ -105,21 +105,6 @@ export interface UseCalendarParams {
    */
   calendarMonthId: string;
   /**
-   * The minimum date allowed to be selected (inclusive). Dates earlier than
-   * this will be disabled.
-   *
-   * **Tip**: To convert to date ID, use `toDateId(date)`.
-   */
-  calendarMinDateId?: string;
-  /**
-   * The maximum date allowed to be selected (inclusive). Dates later than this
-   * will be disabled.
-   *
-   * **Tip**: To convert to date ID, use `toDateId(date)`.
-   */
-  calendarMaxDateId?: string;
-
-  /**
    * The locale to use for the date formatting. If you're using custom
    * formatting functions, this value will be forwarded as the second argument.
    * @defaultValue "en-US"

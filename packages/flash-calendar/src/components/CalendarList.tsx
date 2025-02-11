@@ -31,6 +31,20 @@ export interface CalendarListProps
   extends Omit<CalendarProps, "calendarMonthId">,
     Omit<FlashListProps<CalendarMonthEnhanced>, "renderItem" | "data"> {
   /**
+   * The minimum date allowed to be selected (inclusive). Dates earlier than
+   * this will be disabled.
+   *
+   * **Tip**: To convert to date ID, use `toDateId(date)`.
+   */
+  calendarMinDateId?: string;
+  /**
+   * The maximum date allowed to be selected (inclusive). Dates later than this
+   * will be disabled.
+   *
+   * **Tip**: To convert to date ID, use `toDateId(date)`.
+   */
+  calendarMaxDateId?: string;
+  /**
    * How many months to show before the current month. Once the user scrolls
    * past this range and if they haven't exceeded the `calendarMinDateId`, new
    * months are prepended in this increment.
@@ -170,8 +184,6 @@ export const CalendarList = memo(
         calendarFirstDayOfWeek,
         calendarFormatLocale,
         calendarInstanceId,
-        calendarMaxDateId,
-        calendarMinDateId,
         calendarMonthHeaderHeight,
         calendarRowHorizontalSpacing,
         calendarRowVerticalSpacing,
@@ -192,8 +204,6 @@ export const CalendarList = memo(
         calendarDisabledDateIds,
         calendarFirstDayOfWeek,
         calendarFormatLocale,
-        calendarMaxDateId,
-        calendarMinDateId,
         calendarMonthHeaderHeight,
         calendarRowHorizontalSpacing,
         calendarRowVerticalSpacing,

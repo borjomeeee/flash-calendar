@@ -1,4 +1,4 @@
-import { memo, useEffect } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import type { ColorSchemeName } from "react-native";
 
 import type {
@@ -183,7 +183,9 @@ const BaseCalendar = memo(function BaseCalendar(props: CalendarProps) {
   );
 });
 
-export const Calendar = memo(function Calendar(props: CalendarProps) {
+export const Calendar = memo(function Calendar(
+  props: CalendarProps & UseCalendarParams
+) {
   const {
     calendarInstanceId,
     calendarActiveDateRanges,
@@ -195,7 +197,12 @@ export const Calendar = memo(function Calendar(props: CalendarProps) {
     calendarColorScheme,
     ...otherProps
   } = props;
+
+  const monthId = useRef(calendarMonthId);
+
   useEffect(() => {
+    if (monthId.current === calendarMonthId) return;
+
     activeDateRangesEmitter.emit("onSetActiveDateRanges", {
       instanceId: calendarInstanceId,
       ranges: calendarActiveDateRanges ?? [],
@@ -214,7 +221,27 @@ export const Calendar = memo(function Calendar(props: CalendarProps) {
      * reported by
      * [#11](https://github.com/MarceloPrado/flash-calendar/issues/11).
      */
-  }, [calendarActiveDateRanges, calendarDisabledDateIds, calendarSpecialDateRange, calendarStayDateRange, calendarHighSeasonsDateRange, calendarInstanceId, calendarMonthId]);
+  }, [
+    calendarActiveDateRanges,
+    calendarDisabledDateIds,
+    calendarSpecialDateRange,
+    calendarStayDateRange,
+    calendarHighSeasonsDateRange,
+    calendarInstanceId,
+    calendarMonthId,
+  ]);
+
+  const optimizedProps = useMemo(
+    () => ({
+      calendarActiveDateRanges,
+      calendarDisabledDateIds,
+      calendarSpecialDateRange,
+      calendarStayDateRange,
+      calendarHighSeasonsDateRange,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [calendarMonthId]
+  );
 
   return (
     <CalendarThemeProvider colorScheme={calendarColorScheme}>
@@ -222,6 +249,7 @@ export const Calendar = memo(function Calendar(props: CalendarProps) {
         {...otherProps}
         calendarInstanceId={calendarInstanceId}
         calendarMonthId={calendarMonthId}
+        {...optimizedProps}
       />
     </CalendarThemeProvider>
   );

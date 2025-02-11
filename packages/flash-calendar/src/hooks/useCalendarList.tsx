@@ -59,7 +59,21 @@ const buildMonthList = (
 };
 
 export interface UseCalendarListParams
-  extends Pick<UseCalendarParams, "calendarMinDateId" | "calendarMaxDateId"> {
+  extends Omit<UseCalendarParams, "calendarMonthId"> {
+  /**
+   * The minimum date allowed to be selected (inclusive). Dates earlier than
+   * this will be disabled.
+   *
+   * **Tip**: To convert to date ID, use `toDateId(date)`.
+   */
+  calendarMinDateId?: string;
+  /**
+   * The maximum date allowed to be selected (inclusive). Dates later than this
+   * will be disabled.
+   *
+   * **Tip**: To convert to date ID, use `toDateId(date)`.
+   */
+  calendarMaxDateId?: string;
   /**
    * The initial month to open the calendar to, as a `YYYY-MM-DD` string.
    * @defaultValue today
