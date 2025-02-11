@@ -198,10 +198,13 @@ export const Calendar = memo(function Calendar(
     ...otherProps
   } = props;
 
-  const monthId = useRef(calendarMonthId);
+  const isFirstRender = useRef<boolean>(true);
 
   useEffect(() => {
-    if (monthId.current === calendarMonthId) return;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
     activeDateRangesEmitter.emit("onSetActiveDateRanges", {
       instanceId: calendarInstanceId,
@@ -228,7 +231,6 @@ export const Calendar = memo(function Calendar(
     calendarStayDateRange,
     calendarHighSeasonsDateRange,
     calendarInstanceId,
-    calendarMonthId,
   ]);
 
   const optimizedProps = useMemo(
