@@ -657,6 +657,7 @@ declare function fromDateId(dateId: string): Date;
 
 interface OnSetActiveDateRangesPayload {
     instanceId?: string;
+    todayId: string;
     ranges: CalendarDateRange[];
     disabledRanges: string[];
     specialDateRanges: CalendarSpecialDate[];

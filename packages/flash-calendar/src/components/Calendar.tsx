@@ -27,6 +27,7 @@ import type {
 import { useCalendar } from "@/hooks/useCalendar";
 import { activeDateRangesEmitter } from "@/hooks/useOptimizedDayMetadata";
 import { CalendarThemeProvider } from "@/components/CalendarThemeProvider";
+import { toDateId } from "@/helpers/dates";
 
 export interface CalendarTheme {
   rowMonth?: CalendarRowMonthProps["theme"];
@@ -206,7 +207,9 @@ export const Calendar = memo(function Calendar(
       return;
     }
 
+    const todayId = toDateId(new Date());
     activeDateRangesEmitter.emit("onSetActiveDateRanges", {
+      todayId,
       instanceId: calendarInstanceId,
       ranges: calendarActiveDateRanges ?? [],
       disabledRanges: calendarDisabledDateIds ?? [],

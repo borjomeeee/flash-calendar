@@ -11,6 +11,7 @@ import type {
 
 interface OnSetActiveDateRangesPayload {
   instanceId?: string;
+  todayId: string;
   ranges: CalendarDateRange[];
   disabledRanges: string[];
   specialDateRanges: CalendarSpecialDate[];
@@ -61,6 +62,7 @@ export const useOptimizedDayMetadata = (
   useEffect(() => {
     const handler = (payload: OnSetActiveDateRangesPayload) => {
       const {
+        todayId,
         ranges,
         disabledRanges,
         specialDateRanges,
@@ -77,6 +79,7 @@ export const useOptimizedDayMetadata = (
       // disabled states. These are already covered by the base metadata.
       const fields = getStateFields({
         id: metadata.id,
+        todayId,
         calendarActiveDateRanges: ranges,
         calendarDisabledDateIds: disabledRanges,
         calendarSpecialDateRange: specialDateRanges,

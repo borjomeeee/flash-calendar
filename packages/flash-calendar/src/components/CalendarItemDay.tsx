@@ -201,7 +201,9 @@ export const CalendarItemDay = ({
 
   return (
     <Pressable
-      disabled={metadata.state.includes("disabled")}
+      disabled={
+        metadata.state.includes("disabled") && !metadata.state.includes("stay")
+      }
       onPress={handlePress}
       style={({
         pressed: isPressed,
