@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { addDays, subDays } from "date-fns";
 import { format } from "date-fns/fp/format";
 import { useMemo, useRef, useState } from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 
 import { paddingDecorator } from "@/developer/decorators";
 import { loggingHandler } from "@/developer/loggginHandler";
@@ -105,14 +105,17 @@ export const ActiveDateRanges = () => {
       },
       itemDay: {
         disabled: () => ({
-          container: {
+          content: {
             opacity: 0.5,
           },
         }),
 
         "high-season": () => ({
+          container: {
+            backgroundColor: "#AA0000",
+          },
           content: {
-            color: "#ff0000",
+            color: "#000000",
           },
         }),
 
@@ -130,8 +133,20 @@ export const ActiveDateRanges = () => {
 
   return (
     <Calendar
-      calendarDisabledDateIds={["2024-01-14", "2024-01-15", "2024-01-16"]}
-      calendarHighSeasonsDateRange={["2024-01-14", "2024-01-15", "2024-01-16"]}
+      CalendarDot={() => (
+        <View
+          style={{
+            width: 4,
+            height: 4,
+            backgroundColor: "red",
+          }}
+        />
+      )}
+      calendarDisabledDateIds={[{ startId: "2024-01-14", endId: "2024-01-16" }]}
+      calendarHighSeasonsDateRange={[
+        { startId: "2024-01-13", endId: "2024-01-16" },
+      ]}
+      calendarHorizontalPadding={16}
       calendarMonthId="2024-01-01"
       calendarSpecialDateRange={[
         {
@@ -144,6 +159,7 @@ export const ActiveDateRanges = () => {
         { startId: "2024-01-17", endId: "2024-01-20", stayId: "test-stay" },
       ]}
       // onCalendarDayPress={loggingHandler("onCalendarDayPress")}
+
       theme={theme}
       {...{ calendarActiveDateRanges, onCalendarDayPress }}
     />

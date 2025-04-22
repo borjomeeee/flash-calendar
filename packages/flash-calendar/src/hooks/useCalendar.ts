@@ -38,19 +38,20 @@ export interface StayDateParams {
 /** All fields that affects the day's state. */
 export interface CalendarDayStateFields {
   /** Is this the start of a range? */
-  isStartOfRange: boolean;
+  isStartOfRange: DayState[];
   /**  Is this the end of a range? */
-  isEndOfRange: boolean;
+  isEndOfRange: DayState[];
   /** The state of the day */
   state: DayState[];
   /** Is the range valid (has both start and end dates set)? */
-  isRangeValid: boolean;
+  isRangeValid: DayState[];
 
-  /** CUSTOM FIELDS */
-  specialDate?: SpecialDateParams;
-  stayDate?: string;
-
-  isHighSeasonDate: boolean;
+  additionalData: {
+    specialDate?: SpecialDateParams;
+    stayDate?: string;
+    highSeasonDate?: boolean;
+    [key: string]: any;
+  };
 }
 
 /**
@@ -137,14 +138,14 @@ export interface UseCalendarParams {
    * The disabled date IDs. Dates in this list will be in the `disabled` state
    * unless they are part of an active range.
    */
-  calendarDisabledDateIds?: string[];
+  calendarDisabledDateIds?: CalendarDateRange[];
 
   /**
    * CUSTOM
    */
   calendarSpecialDateRange?: CalendarSpecialDate[];
   calendarStayDateRange?: CalendarStayDateRange[];
-  calendarHighSeasonsDateRange?: string[];
+  calendarHighSeasonsDateRange?: CalendarDateRange[];
 }
 
 type GetStateFields = Pick<
@@ -171,41 +172,19 @@ export const getStateFields = ({
   calendarSpecialDateRange,
   calendarStayDateRange,
 }: GetStateFields): CalendarDayStateFields => {
-  const activeRange = calendarActiveDateRanges?.find(({ startId, endId }) => {
-    // Regular range
-    if (startId && endId) {
-      return id >= startId && id <= endId;
-    } else if (startId) {
-      return id === startId;
-    } else if (endId) {
-      return id === endId;
-    }
-    return false;
-  });
+  const activeRange = getRange(calendarActiveDateRanges || [], id);
+  const stayDateRange = getRange(calendarStayDateRange || [], id);
+  const highSeasonRange = getRange(calendarHighSeasonsDateRange || [], id);
+  const disabledRange = getRange(calendarDisabledDateIds || [], id);
 
-  const stayDateRange = calendarStayDateRange?.find(({ startId, endId }) => {
-    // Regular range
-    if (startId && endId) {
-      return id >= startId && id <= endId;
-    } else if (startId) {
-      return id === startId;
-    } else if (endId) {
-      return id === endId;
-    }
-    return false;
-  });
+  const isActiveRange = !!activeRange;
+  const isStayRange = !!stayDateRange;
+  const isDisabled = !!disabledRange;
+  const isHighSeasonDate = !!highSeasonRange;
 
-  const isActiveRange =
-    activeRange?.startId !== undefined && activeRange.endId !== undefined;
-  const isStayRange =
-    stayDateRange?.startId !== undefined && stayDateRange.endId !== undefined;
-  const isRangeValid = isActiveRange || isStayRange;
-
-  const isDisabled = calendarDisabledDateIds?.includes(id);
   const specialDate = calendarSpecialDateRange?.find(({ dateId }) => {
     return dateId === id;
   });
-  const isHighSeasonDate = !!calendarHighSeasonsDateRange?.includes(id);
 
   const isToday = todayId === id;
   const states: DayState[] = ["idle"];
@@ -216,30 +195,77 @@ export const getStateFields = ({
   if (specialDate) {
     states.push("special-date");
   }
-  if (isToday) {
-    states.push("today");
-  }
   if (isDisabled) {
     states.push("disabled");
   }
-  if (activeRange) {
-    states.push("active");
+  if (isToday) {
+    states.push("today");
   }
-  if (stayDateRange) {
+  if (isStayRange) {
     states.push("stay");
+  }
+  if (isActiveRange) {
+    states.push("active");
   }
 
   return {
-    isStartOfRange:
-      id === activeRange?.startId || id === stayDateRange?.startId,
-    isEndOfRange: id === activeRange?.endId || id === stayDateRange?.endId,
-    isRangeValid,
+    isStartOfRange: [
+      ["active", activeRange?.startId === id],
+      ["stay", stayDateRange?.startId === id],
+      ["disabled", disabledRange?.startId === id],
+      ["high-season", highSeasonRange?.startId === id],
+    ]
+      .filter(([_, value]) => value)
+      .map(([key]) => key as DayState),
+    isEndOfRange: [
+      ["active", activeRange?.endId === id],
+      ["stay", stayDateRange?.endId === id],
+      ["disabled", disabledRange?.endId === id],
+      ["high-season", highSeasonRange?.endId === id],
+    ]
+      .filter(([_, value]) => value)
+      .map(([key]) => key as DayState),
+
+    isRangeValid: [
+      [
+        "active",
+        activeRange?.startId &&
+          activeRange?.endId &&
+          id >= activeRange?.startId &&
+          id <= activeRange?.endId,
+      ],
+      [
+        "stay",
+        stayDateRange?.startId &&
+          stayDateRange?.endId &&
+          id >= stayDateRange?.startId &&
+          id <= stayDateRange?.endId,
+      ],
+      [
+        "disabled",
+        disabledRange?.startId &&
+          disabledRange?.endId &&
+          id >= disabledRange?.startId &&
+          id <= disabledRange?.endId,
+      ],
+      [
+        "high-season",
+        highSeasonRange?.startId &&
+          highSeasonRange?.endId &&
+          id >= highSeasonRange?.startId &&
+          id <= highSeasonRange?.endId,
+      ],
+    ]
+      .filter(([_, value]) => value)
+      .map(([key]) => key as DayState),
 
     state: states,
 
-    isHighSeasonDate,
-    specialDate,
-    stayDate: stayDateRange?.stayId,
+    additionalData: {
+      isHighSeasonDate,
+      specialDate,
+      stayDate: stayDateRange?.stayId,
+    },
   };
 };
 
@@ -396,3 +422,18 @@ export const buildCalendar = (params: UseCalendarParams) => {
  */
 export const useCalendar = (params: UseCalendarParams) =>
   useMemo(() => buildCalendar(params), [params]);
+
+function getRange<T extends CalendarDateRange>(range: T[], id: string) {
+  return range.find(({ startId, endId }) => {
+    if (startId && endId) {
+      return id >= startId && id <= endId;
+    }
+    if (startId) {
+      return id === startId;
+    }
+    if (endId) {
+      return id === endId;
+    }
+    return false;
+  });
+}

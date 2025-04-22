@@ -13,10 +13,10 @@ interface OnSetActiveDateRangesPayload {
   instanceId?: string;
   todayId: string;
   ranges: CalendarDateRange[];
-  disabledRanges: string[];
+  disabledRanges: CalendarDateRange[];
   specialDateRanges: CalendarSpecialDate[];
   stayDateRange: CalendarStayDateRange[];
-  highSeasonRange: string[];
+  highSeasonRange: CalendarDateRange[];
 }
 
 /**

@@ -40,6 +40,7 @@ export interface CalendarTheme {
    * set a base value once and use it for all states.
    */
   itemDay?: CalendarItemDayProps["theme"];
+  itemDayFiller?: CalendarItemDayProps["theme"];
 }
 
 export type CalendarOnDayPress = (
@@ -102,16 +103,21 @@ export interface CalendarProps extends UseCalendarParams {
   onCalendarDayPress: CalendarOnDayPress;
   /** Theme to customize the calendar component. */
   theme?: CalendarTheme;
+
+  CalendarDot?: React.FC;
+  calendarHorizontalPadding?: number;
 }
 
 const BaseCalendar = memo(function BaseCalendar(props: CalendarProps) {
   const {
+    CalendarDot,
     calendarInstanceId,
     calendarRowVerticalSpacing = 8,
     calendarRowHorizontalSpacing = 8,
     calendarDayHeight = 32,
     calendarMonthHeaderHeight = 20,
     calendarWeekHeaderHeight = calendarDayHeight,
+    calendarHorizontalPadding = 0,
     onCalendarDayPress,
     theme,
 
@@ -149,10 +155,14 @@ const BaseCalendar = memo(function BaseCalendar(props: CalendarProps) {
             if (dayProps.isDifferentMonth) {
               return (
                 <CalendarItemDayContainer
+                  CalendarDot={CalendarDot || (() => null)}
+                  calendarHorizontalPadding={calendarHorizontalPadding}
                   dayHeight={calendarDayHeight}
                   daySpacing={calendarRowHorizontalSpacing}
+                  isEndOfWeek={dayProps.isEndOfWeek}
                   isStartOfWeek={dayProps.isStartOfWeek}
                   key={dayProps.id}
+                  metadata={dayProps}
                   theme={theme?.itemDayContainer}
                 >
                   <CalendarItemEmpty
@@ -165,8 +175,9 @@ const BaseCalendar = memo(function BaseCalendar(props: CalendarProps) {
 
             return (
               <CalendarItemDayWithContainer
+                CalendarDot={CalendarDot || (() => null)}
+                calendarHorizontalPadding={calendarHorizontalPadding}
                 calendarInstanceId={calendarInstanceId}
-                containerTheme={theme?.itemDayContainer}
                 dayHeight={calendarDayHeight}
                 daySpacing={calendarRowHorizontalSpacing}
                 key={dayProps.id}
