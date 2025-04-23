@@ -367,7 +367,7 @@ export const CalendarList = memo(
         paddingBottom: calendarSpacing,
         overflow: "visible",
         paddingHorizontal: calendarPaddingHorizontal,
-      };
+      } as const;
     }, [calendarPaddingHorizontal, calendarSpacing]);
 
     return (
