@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
 } from "react";
+import type { ViewStyle } from "react-native";
 import { View } from "react-native";
 
 import type { CalendarProps } from "@/components/Calendar";
@@ -101,6 +102,8 @@ export interface CalendarListProps
    * - calendarSpacing
    */
   renderItem?: FlashListProps<CalendarMonthEnhanced>["renderItem"];
+
+  calendarPaddingHorizontal?: number;
 }
 
 interface ImperativeScrollParams {
@@ -148,6 +151,7 @@ export const CalendarList = memo(
       calendarDayHeight = 32,
       calendarWeekHeaderHeight = calendarDayHeight,
       calendarAdditionalHeight = 0,
+      calendarPaddingHorizontal = 0,
 
       // Other props
       calendarColorScheme,
@@ -165,6 +169,7 @@ export const CalendarList = memo(
       calendarInstanceId,
       calendarMaxDateId,
       calendarMinDateId,
+      CalendarDot,
       getCalendarDayFormat,
       getCalendarMonthFormat,
       getCalendarWeekDayFormat,
@@ -188,6 +193,7 @@ export const CalendarList = memo(
         calendarRowHorizontalSpacing,
         calendarRowVerticalSpacing,
         calendarWeekHeaderHeight,
+        CalendarDot,
         getCalendarDayFormat,
         getCalendarMonthFormat,
         getCalendarWeekDayFormat,
@@ -208,6 +214,7 @@ export const CalendarList = memo(
         calendarRowHorizontalSpacing,
         calendarRowVerticalSpacing,
         calendarWeekHeaderHeight,
+        CalendarDot,
         getCalendarDayFormat,
         getCalendarMonthFormat,
         getCalendarWeekDayFormat,
@@ -355,9 +362,13 @@ export const CalendarList = memo(
       },
     }));
 
-    const calendarContainerStyle = useMemo(() => {
-      return { paddingBottom: calendarSpacing };
-    }, [calendarSpacing]);
+    const containerStyle = useMemo(() => {
+      return {
+        paddingBottom: calendarSpacing,
+        overflow: "visible",
+        paddingHorizontal: calendarPaddingHorizontal,
+      };
+    }, [calendarPaddingHorizontal, calendarSpacing]);
 
     return (
       <CalendarScrollComponent
@@ -369,8 +380,12 @@ export const CalendarList = memo(
         overrideItemLayout={handleOverrideItemLayout}
         ref={flashListRef}
         renderItem={({ item }) => (
-          <View style={calendarContainerStyle}>
-            <Calendar calendarMonthId={item.id} {...item.calendarProps} />
+          <View style={containerStyle}>
+            <Calendar
+              calendarMonthId={item.id}
+              {...item.calendarProps}
+              calendarHorizontalPadding={calendarPaddingHorizontal}
+            />
           </View>
         )}
         showsVerticalScrollIndicator={false}

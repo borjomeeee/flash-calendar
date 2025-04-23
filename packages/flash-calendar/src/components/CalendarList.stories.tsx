@@ -39,7 +39,7 @@ const CalendarListMeta: Meta<typeof Calendar.List> = {
     calendarFirstDayOfWeek: "sunday",
     calendarInitialMonthId: toDateId(startOfThisMonth),
   },
-  decorators: [paddingDecorator],
+  decorators: [],
 };
 
 export default CalendarListMeta;
@@ -207,13 +207,15 @@ export function DateRangePicker() {
   };
 
   return (
-    <VStack alignItems="center" grow spacing={20}>
+    <>
       <Text style={{ ...textProps.style, fontWeight: "bold" }}>
         This shows how to build a date range picker bounded by the current year
       </Text>
-      <View style={{ flex: 1, width: "100%" }}>
-        <Calendar.List {...calendarListProps} {...calendarDateRangeProps} />
-      </View>
+      <Calendar.List
+        {...calendarListProps}
+        {...calendarDateRangeProps}
+        calendarPaddingHorizontal={20}
+      />
       <HStack justifyContent="space-between" width="100%">
         <Button onPress={onClearDateRange} title="Clear range" />
         <VStack spacing={4}>
@@ -225,7 +227,7 @@ export function DateRangePicker() {
           <Text {...textProps}>{isDateRangeValid ? "✅" : "❌"}</Text>
         </VStack>
       </HStack>
-    </VStack>
+    </>
   );
 }
 

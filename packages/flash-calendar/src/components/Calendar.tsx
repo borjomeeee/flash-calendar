@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useRef } from "react";
-import type { ColorSchemeName } from "react-native";
+import type { ColorSchemeName, ViewStyle } from "react-native";
 
 import type {
   CalendarItemDayContainerProps,
