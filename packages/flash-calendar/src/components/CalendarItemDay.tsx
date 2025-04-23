@@ -199,14 +199,7 @@ export const CalendarItemDay = ({
   }, [metadata, onPress]);
 
   return (
-    <Pressable
-      disabled={metadata.state.includes("disabled")}
-      onPress={handlePress}
-      style={{
-        flex: 1,
-        height,
-      }}
-    >
+    <Pressable onPress={handlePress} style={{ height }}>
       {({ pressed: isPressed, hovered: isHovered, focused: isFocused }) => {
         const params = {
           isPressed,
@@ -241,7 +234,7 @@ export const CalendarItemDay = ({
         }, {});
 
         const Wrapper = metadata.state.reduce(
-          (Acc, state) => {
+          (Acc, state, indx) => {
             const baseStylesForStatesContainer = {
               ...baseStyles?.[state]?.({
                 ...params,
@@ -323,7 +316,9 @@ export interface CalendarItemDayContainerProps {
   calendarHorizontalPadding: number;
 
   metadata: CalendarDayMetadata;
-  CalendarDot: React.FC;
+  CalendarDot?: React.FC;
+
+  show?: boolean;
 }
 
 export const CalendarItemDayContainer = ({
@@ -337,8 +332,6 @@ export const CalendarItemDayContainer = ({
   theme,
   CalendarDot,
 }: CalendarItemDayContainerProps) => {
-  const baseTheme = useTheme();
-
   const showFiller = metadata.state.filter((item) => {
     const isEndOfRange = metadata.isEndOfRange.includes(item);
 
@@ -393,15 +386,16 @@ export const CalendarItemDayContainer = ({
       isFocused: false,
     };
 
-    return showFiller.reduce((acc, item) => {
+    return showFiller.reduce((acc, item, indx) => {
       return [
         ...acc,
         <View
+          key={indx}
           style={{
             position: "absolute",
             top: 0,
             bottom: 0,
-            right: -(daySpacing + 1), // +1 to cover the 1px gap
+            right: -daySpacing - 1, // +1 to cover the 1px gap
             width: daySpacing + 2, // +2 to cover the 1px gap (distributes evenly on both sides)
             ...theme?.[item]?.({
               ...params,
@@ -425,10 +419,11 @@ export const CalendarItemDayContainer = ({
       isHovered: false,
       isFocused: false,
     };
-    return showHorizontalFiller.reduce((acc, item) => {
+    return showHorizontalFiller.reduce((acc, item, indx) => {
       return [
         ...acc,
         <View
+          key={indx}
           style={{
             position: "absolute",
             top: 0,
@@ -464,10 +459,11 @@ export const CalendarItemDayContainer = ({
       isFocused: false,
     };
 
-    return showHorizontalFiller.reduce((acc, item) => {
+    return showHorizontalFiller.reduce((acc, item, indx) => {
       return [
         ...acc,
         <View
+          key={indx}
           style={{
             position: "absolute",
             top: 0,
@@ -497,7 +493,7 @@ export const CalendarItemDayContainer = ({
       {dayFillerStart}
       {children}
       {dayFiller}
-      {metadata.additionalData.specialDate ? (
+      {metadata.additionalData.specialDate && CalendarDot ? (
         <View
           style={{
             ...StyleSheet.absoluteFillObject,
@@ -532,7 +528,7 @@ export interface CalendarItemDayWithContainerProps
   /** Calendar hotizontal padding */
   calendarHorizontalPadding: number;
 
-  CalendarDot: React.FC;
+  CalendarDot?: React.FC;
 }
 
 export const CalendarItemDayWithContainer = ({

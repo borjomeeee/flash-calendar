@@ -155,7 +155,7 @@ const BaseCalendar = memo(function BaseCalendar(props: CalendarProps) {
             if (dayProps.isDifferentMonth) {
               return (
                 <CalendarItemDayContainer
-                  CalendarDot={CalendarDot || (() => null)}
+                  CalendarDot={CalendarDot}
                   calendarHorizontalPadding={calendarHorizontalPadding}
                   dayHeight={calendarDayHeight}
                   daySpacing={calendarRowHorizontalSpacing}
@@ -175,7 +175,7 @@ const BaseCalendar = memo(function BaseCalendar(props: CalendarProps) {
 
             return (
               <CalendarItemDayWithContainer
-                CalendarDot={CalendarDot || (() => null)}
+                CalendarDot={CalendarDot}
                 calendarHorizontalPadding={calendarHorizontalPadding}
                 calendarInstanceId={calendarInstanceId}
                 dayHeight={calendarDayHeight}

@@ -185,7 +185,8 @@ interface CalendarItemDayContainerProps {
     /** Calendar hotizontal padding */
     calendarHorizontalPadding: number;
     metadata: CalendarDayMetadata;
-    CalendarDot: React.FC;
+    CalendarDot?: React.FC;
+    show?: boolean;
 }
 declare const CalendarItemDayContainer: ({ children, isStartOfWeek, isEndOfWeek, daySpacing, dayHeight, calendarHorizontalPadding, metadata, theme, CalendarDot, }: CalendarItemDayContainerProps) => react_jsx_runtime.JSX.Element;
 interface CalendarItemDayWithContainerProps extends Omit<CalendarItemDayProps, "height">, Pick<CalendarItemDayContainerProps, "daySpacing" | "dayHeight"> {
@@ -203,7 +204,7 @@ interface CalendarItemDayWithContainerProps extends Omit<CalendarItemDayProps, "
     calendarInstanceId?: string;
     /** Calendar hotizontal padding */
     calendarHorizontalPadding: number;
-    CalendarDot: React.FC;
+    CalendarDot?: React.FC;
 }
 declare const CalendarItemDayWithContainer: ({ children, metadata: baseMetadata, onPress, theme, dayHeight, daySpacing, calendarHorizontalPadding, calendarInstanceId, CalendarDot, }: CalendarItemDayWithContainerProps) => react_jsx_runtime.JSX.Element;
 

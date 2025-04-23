@@ -379,14 +379,17 @@ export const CalendarList = memo(
         onEndReached={handleOnEndReached}
         overrideItemLayout={handleOverrideItemLayout}
         ref={flashListRef}
-        renderItem={({ item }) => (
-          <View style={containerStyle}>
-            <Calendar
-              calendarMonthId={item.id}
-              {...item.calendarProps}
-              calendarHorizontalPadding={calendarPaddingHorizontal}
-            />
-          </View>
+        renderItem={useCallback(
+          ({ item }: { item: CalendarMonthEnhanced }) => (
+            <View style={containerStyle}>
+              <Calendar
+                calendarMonthId={item.id}
+                {...item.calendarProps}
+                calendarHorizontalPadding={calendarPaddingHorizontal}
+              />
+            </View>
+          ),
+          [calendarPaddingHorizontal, containerStyle]
         )}
         showsVerticalScrollIndicator={false}
         {...flatListProps}

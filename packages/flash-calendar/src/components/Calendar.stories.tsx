@@ -348,10 +348,10 @@ const calendarThemeBuilder = () =>
           borderColor: "#000000",
           marginVertical: 4,
 
-          borderTopLeftRadius: isStartOfRange ? 25 : 0,
-          borderBottomLeftRadius: isStartOfRange ? 25 : 0,
-          borderTopRightRadius: isEndOfRange ? 25 : 0,
-          borderBottomRightRadius: isEndOfRange ? 25 : 0,
+          borderTopLeftRadius: isStartOfRange ? 20 : 0,
+          borderBottomLeftRadius: isStartOfRange ? 20 : 0,
+          borderTopRightRadius: isEndOfRange ? 20 : 0,
+          borderBottomRightRadius: isEndOfRange ? 20 : 0,
 
           borderLeftWidth: isStartOfRange ? 1 : 0,
           borderRightWidth: isEndOfRange ? 1 : 0,

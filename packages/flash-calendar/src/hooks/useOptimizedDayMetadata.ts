@@ -88,7 +88,9 @@ export const useOptimizedDayMetadata = (
       });
 
       const propertiesSame = Object.entries(fields).every(([key, value]) => {
-        if (typeof value === "object") {
+        if (Array.isArray(value)) {
+          return value.every((v, i) => v === (metadata as any)[key][i]);
+        } else if (typeof value === "object") {
           return (
             JSON.stringify(value) === JSON.stringify((metadata as any)[key])
           );
