@@ -10,6 +10,7 @@ import { endOfMonth, startOfMonth, toDateId } from "@/helpers/dates";
 import { useDateRange } from "@/hooks/useDateRange";
 import { VStack } from "@/components/VStack";
 
+import type { CalendarTheme } from "./Calendar";
 import { Calendar } from "./Calendar";
 
 const today = new Date();
@@ -129,6 +130,7 @@ export const ActiveDateRanges = () => {
     []
   );
 
+  const theme2 = calendarThemeBuilder();
   const { calendarActiveDateRanges, onCalendarDayPress } = useDateRange();
 
   return (
@@ -142,12 +144,14 @@ export const ActiveDateRanges = () => {
           }}
         />
       )}
+      calendarDayHeight={49}
       calendarDisabledDateIds={[{ startId: "2024-01-14", endId: "2024-01-16" }]}
       calendarHighSeasonsDateRange={[
-        { startId: "2024-01-13", endId: "2024-01-16" },
+        { startId: "2024-01-13", endId: "2024-01-29" },
       ]}
       calendarHorizontalPadding={16}
       calendarMonthId="2024-01-01"
+      calendarRowVerticalSpacing={0}
       calendarSpecialDateRange={[
         {
           dateId: "2024-01-15",
@@ -158,9 +162,7 @@ export const ActiveDateRanges = () => {
       calendarStayDateRange={[
         { startId: "2024-01-17", endId: "2024-01-20", stayId: "test-stay" },
       ]}
-      // onCalendarDayPress={loggingHandler("onCalendarDayPress")}
-
-      theme={theme}
+      theme={theme2}
       {...{ calendarActiveDateRanges, onCalendarDayPress }}
     />
   );
@@ -285,3 +287,96 @@ function CalendarInstanceDemo({
     </VStack>
   );
 }
+
+const calendarThemeBuilder = () =>
+  ({
+    itemDayContainer: {
+      activeDayFiller: {
+        backgroundColor: "#000000",
+      },
+      stayDayFiller: {
+        backgroundColor: "#000000",
+      },
+    },
+    itemDay: {
+      idle: () => ({}),
+      active: ({ isStartOfRange, isEndOfRange }) => ({
+        container: {
+          marginVertical: 4,
+
+          backgroundColor: "#000000",
+
+          borderTopLeftRadius: isStartOfRange ? 25 : 0,
+          borderBottomLeftRadius: isStartOfRange ? 25 : 0,
+          borderTopRightRadius: isEndOfRange ? 25 : 0,
+          borderBottomRightRadius: isEndOfRange ? 25 : 0,
+        },
+        content: {
+          color: "#ffffff",
+        },
+      }),
+
+      today: () => ({
+        container: {
+          borderWidth: 1,
+          borderColor: "#000000",
+          borderTopRightRadius: 25,
+          borderBottomRightRadius: 25,
+          borderTopLeftRadius: 25,
+          borderBottomLeftRadius: 25,
+          margin: 4.5,
+        },
+      }),
+
+      disabled: () => ({
+        container: {},
+        content: {
+          opacity: 0.5,
+        },
+      }),
+
+      "high-season": () => ({
+        container: {
+          backgroundColor: "#FFEFE5",
+        },
+      }),
+
+      stay: ({ isStartOfRange, isEndOfRange }) => ({
+        content: {},
+        container: {
+          borderWidth: 1,
+          borderColor: "#000000",
+          marginVertical: 4,
+
+          borderTopLeftRadius: isStartOfRange ? 25 : 0,
+          borderBottomLeftRadius: isStartOfRange ? 25 : 0,
+          borderTopRightRadius: isEndOfRange ? 25 : 0,
+          borderBottomRightRadius: isEndOfRange ? 25 : 0,
+
+          borderLeftWidth: isStartOfRange ? 1 : 0,
+          borderRightWidth: isEndOfRange ? 1 : 0,
+        },
+      }),
+    },
+
+    rowMonth: {
+      container: {
+        paddingTop: 20,
+        paddingVertical: 2,
+      },
+      content: {
+        textAlign: "left",
+        color: "#000000",
+      },
+    },
+
+    itemWeekName: {
+      container: {
+        paddingTop: 12,
+        paddingBottom: 8,
+      },
+      content: {
+        color: "#000000",
+      },
+    },
+  } as CalendarTheme);

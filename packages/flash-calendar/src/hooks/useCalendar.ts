@@ -195,14 +195,14 @@ export const getStateFields = ({
   if (specialDate) {
     states.push("special-date");
   }
-  if (isDisabled) {
-    states.push("disabled");
-  }
   if (isToday) {
     states.push("today");
   }
   if (isStayRange) {
     states.push("stay");
+  }
+  if (isDisabled) {
+    states.push("disabled");
   }
   if (isActiveRange) {
     states.push("active");

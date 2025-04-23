@@ -240,7 +240,7 @@ export const CalendarItemDay = ({
           return acc;
         }, {});
 
-        const Wrapper = metadata.state.reverse().reduce(
+        const Wrapper = metadata.state.reduce(
           (Acc, state) => {
             const baseStylesForStatesContainer = {
               ...baseStyles?.[state]?.({
@@ -339,61 +339,38 @@ export const CalendarItemDayContainer = ({
 }: CalendarItemDayContainerProps) => {
   const baseTheme = useTheme();
 
-  const params = {
-    isPressed: false,
-    isHovered: false,
-    isFocused: false,
-  };
-
-  const fillerStyles = metadata.state.reduce((acc, item) => {
+  const showFiller = metadata.state.filter((item) => {
     const isEndOfRange = metadata.isEndOfRange.includes(item);
-    const isStartOfRange = metadata.isStartOfRange.includes(item);
 
     if (isEndOfRange) {
-      return acc;
+      return false;
     }
 
     if (!metadata.isRangeValid.includes(item)) {
-      return acc;
+      return false;
     }
 
-    return {
-      ...(acc || {}),
-      ...theme?.[item]?.({
-        ...params,
-        ...metadata,
-        isEndOfRange,
-        isStartOfRange,
-      }).container,
-    };
-  }, undefined as object | undefined);
+    return true;
+  });
 
-  const fillerHorizontalStyles = metadata.state.reduce((acc, item) => {
+  const showHorizontalFiller = metadata.state.filter((item) => {
     const isEndOfRange = metadata.isEndOfRange.includes(item);
     const isStartOfRange = metadata.isStartOfRange.includes(item);
 
     if (!metadata.isRangeValid.includes(item)) {
-      return acc;
+      return false;
     }
 
     if (isStartOfRange && !isEndOfWeek) {
-      return acc;
+      return false;
     }
 
     if (isEndOfRange && !isStartOfWeek) {
-      return acc;
+      return false;
     }
 
-    return {
-      ...(acc || {}),
-      ...theme?.[item]?.({
-        ...params,
-        ...metadata,
-        isEndOfRange,
-        isStartOfRange,
-      }).container,
-    };
-  }, undefined as object | undefined);
+    return true;
+  });
 
   const spacerStyles = useMemo<ViewStyle>(() => {
     return {
@@ -405,74 +382,121 @@ export const CalendarItemDayContainer = ({
     };
   }, [dayHeight, daySpacing, isStartOfWeek]);
 
-  const dayFiller = useMemo<ViewStyle | null>(() => {
-    if (!fillerStyles || isEndOfWeek) {
+  const dayFiller = useMemo(() => {
+    if (isEndOfWeek) {
       return null;
     }
 
-    return {
-      position: "absolute",
-      top: 0,
-      bottom: 0,
-      right: -(daySpacing + 1), // +1 to cover the 1px gap
-      width: daySpacing + 2, // +2 to cover the 1px gap (distributes evenly on both sides)
-      backgroundColor: baseTheme.colors.background.inverse.primary,
-      ...fillerStyles,
+    const params = {
+      isPressed: false,
+      isHovered: false,
+      isFocused: false,
     };
-  }, [
-    baseTheme.colors.background.inverse.primary,
-    daySpacing,
-    isEndOfWeek,
-    fillerStyles,
-  ]);
 
-  const dayFillerStart = useMemo<ViewStyle | null>(() => {
-    if (fillerHorizontalStyles && isStartOfWeek) {
-      return {
-        position: "absolute",
-        top: 0,
-        bottom: 0,
-        left: -(calendarHorizontalPadding + 1), // +1 to cover the 1px gap
-        width: calendarHorizontalPadding + 2, // +2 to cover the 1px gap (distributes evenly on both sides)
-        backgroundColor: baseTheme.colors.background.inverse.primary,
-        ...fillerHorizontalStyles,
-      };
+    return showFiller.reduce((acc, item) => {
+      return [
+        ...acc,
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            right: -(daySpacing + 1), // +1 to cover the 1px gap
+            width: daySpacing + 2, // +2 to cover the 1px gap (distributes evenly on both sides)
+            ...theme?.[item]?.({
+              ...params,
+              ...metadata,
+              isEndOfRange: false,
+              isStartOfRange: false,
+            }).container,
+          }}
+        />,
+      ];
+    }, [] as React.ReactNode[]);
+  }, [daySpacing, isEndOfWeek, theme, metadata, showFiller]);
+
+  const dayFillerStart = useMemo(() => {
+    if (!isStartOfWeek) {
+      return null;
     }
 
-    return null;
+    const params = {
+      isPressed: false,
+      isHovered: false,
+      isFocused: false,
+    };
+    return showHorizontalFiller.reduce((acc, item) => {
+      return [
+        ...acc,
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: -(calendarHorizontalPadding + 1), // +1 to cover the 1px gap
+            width: calendarHorizontalPadding + 2, // +2 to cover the 1px gap (distributes evenly on both sides)
+            ...theme?.[item]?.({
+              ...params,
+              ...metadata,
+              isEndOfRange: false,
+              isStartOfRange: false,
+            }).container,
+          }}
+        />,
+      ];
+    }, [] as React.ReactNode[]);
   }, [
-    baseTheme.colors.background.inverse.primary,
     calendarHorizontalPadding,
     isStartOfWeek,
-    fillerHorizontalStyles,
+    theme,
+    metadata,
+    showHorizontalFiller,
   ]);
 
-  const dayFillerEnd = useMemo<ViewStyle | null>(() => {
-    if (fillerHorizontalStyles && isEndOfWeek) {
-      return {
-        position: "absolute",
-        top: 0,
-        bottom: 0,
-        right: -calendarHorizontalPadding - 1, // +1 to cover the 1px gap
-        width: calendarHorizontalPadding + 2, // +2 to cover the 1px gap (distributes evenly on both sides)
-        backgroundColor: baseTheme.colors.background.inverse.primary,
-        ...fillerHorizontalStyles,
-      };
+  const dayFillerEnd = useMemo(() => {
+    if (!isEndOfWeek) {
+      return null;
     }
 
-    return null;
+    const params = {
+      isPressed: false,
+      isHovered: false,
+      isFocused: false,
+    };
+
+    return showHorizontalFiller.reduce((acc, item) => {
+      return [
+        ...acc,
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            right: -calendarHorizontalPadding - 1, // +1 to cover the 1px gap
+            width: calendarHorizontalPadding + 1, // +2 to cover the 1px gap (distributes evenly on both sides)
+            ...theme?.[item]?.({
+              ...params,
+              ...metadata,
+              isEndOfRange: false,
+              isStartOfRange: false,
+            }).container,
+          }}
+        />,
+      ];
+    }, [] as React.ReactNode[]);
   }, [
-    baseTheme.colors.background.inverse.primary,
     calendarHorizontalPadding,
     isEndOfWeek,
-    fillerHorizontalStyles,
+    theme,
+    metadata,
+    showHorizontalFiller,
   ]);
 
   return (
     <View style={spacerStyles}>
-      {dayFillerStart ? <View style={dayFillerStart} /> : null}
+      {dayFillerStart}
       {children}
-      {dayFiller ? <View style={dayFiller} /> : null}
+      {dayFiller}
       {metadata.additionalData.specialDate ? (
         <View
           style={{
@@ -485,7 +509,7 @@ export const CalendarItemDayContainer = ({
           <CalendarDot />
         </View>
       ) : null}
-      {dayFillerEnd ? <View style={dayFillerEnd} /> : null}
+      {dayFillerEnd}
     </View>
   );
 };
