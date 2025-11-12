@@ -242,9 +242,19 @@ export const CalendarList = memo(
     }, [calendarProps, monthList]);
 
     const handleOnEndReached = useCallback(() => {
+      if (calendarMaxDateId) {
+        onEndReached?.();
+        return;
+      }
+
       appendMonths(calendarFutureScrollRangeInMonths);
       onEndReached?.();
-    }, [appendMonths, calendarFutureScrollRangeInMonths, onEndReached]);
+    }, [
+      appendMonths,
+      calendarFutureScrollRangeInMonths,
+      onEndReached,
+      calendarMaxDateId,
+    ]);
 
     const handleOverrideItemLayout = useCallback<
       NonNullable<FlashListProps<CalendarMonth>["overrideItemLayout"]>

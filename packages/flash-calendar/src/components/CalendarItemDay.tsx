@@ -396,7 +396,7 @@ export const CalendarItemDayContainer = ({
             top: 0,
             bottom: 0,
             right: -daySpacing - 1, // +1 to cover the 1px gap
-            width: daySpacing + 2, // +2 to cover the 1px gap (distributes evenly on both sides)
+            width: daySpacing + 1.1, // +2 to cover the 1px gap (distributes evenly on both sides)
             ...theme?.[item]?.({
               ...params,
               ...metadata,
