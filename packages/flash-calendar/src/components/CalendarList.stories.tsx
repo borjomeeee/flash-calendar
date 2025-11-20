@@ -176,9 +176,15 @@ export function MinAndMaxDates() {
       <Text>This calendar list is only available for the 2024 period</Text>
       <View style={{ flex: 1, width: "100%" }}>
         <Calendar.List
-          calendarInitialMonthId="2024-02-13"
-          calendarMaxDateId="2024-12-31"
-          calendarMinDateId="2024-01-01"
+          calendarDisabledDateIds={[
+            {
+              startId: "2026-11-30",
+              endId: "2030-12-30",
+            },
+          ]}
+          calendarInitialMonthId="2025-11-12"
+          calendarMaxDateId="2029-11-12"
+          calendarMinDateId="2025-11-12"
           onCalendarDayPress={loggingHandler("onCalendarDayPress")}
         />
       </View>

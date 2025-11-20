@@ -102,9 +102,11 @@ const getEndingMonth = (
   const safeMaxDateId = calendarMaxDateId ?? newEndingMonthId;
 
   // We've exceeded the max date
-  return newEndingMonthId > safeMaxDateId
-    ? fromDateId(safeMaxDateId)
-    : endingMonthFromRange;
+  return startOfMonth(
+    newEndingMonthId > safeMaxDateId
+      ? fromDateId(safeMaxDateId)
+      : endingMonthFromRange
+  );
 };
 
 const getStartingMonth = (
@@ -187,6 +189,10 @@ export const useCalendarList = ({
         endingMonth,
         calendarFirstDayOfWeek
       );
+
+      if (newMonths.length === 0) {
+        return monthList;
+      }
 
       const newMonthList = [...monthList, ...newMonths];
       setMonthList(newMonthList);

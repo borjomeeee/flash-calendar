@@ -9,7 +9,6 @@ import {
   useMemo,
   useRef,
 } from "react";
-import type { ViewStyle } from "react-native";
 import { View } from "react-native";
 
 import type { CalendarProps } from "@/components/Calendar";
